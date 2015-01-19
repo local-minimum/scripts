@@ -126,6 +126,7 @@ def writeRscript(PLATE):
 
 def runPlot (options, name):
 	name = os.path.join(os.path.dirname(options.path), name)
+	name = name.rstrip()
 	rscript=os.path.join(os.path.dirname(options.path), "run_plot.r")
 	call(["Rscript", rscript, name], stdout=DEVNULL, stderr=DEVNULL)
 	call(["rm", rscript])	
