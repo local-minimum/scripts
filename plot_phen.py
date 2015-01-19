@@ -9,6 +9,8 @@ import figMethods
 import scanomatic.dataProcessing.norm as som_norm
 import textwrap
 
+DEVNULL = open(os.devnull, 'wb')
+
 """
 The program takes a list of dates, dates that the scan were preformed. Cycle 1 -> n. It gives all normalized phenotypes into 
 temp files. The npy objects need to be called normalized_phenotypes.npy
@@ -83,13 +85,7 @@ def writeRscript(PLATE):
 	print >> out_file, "#!/usr/bin/env Rscript"
 	print >> out_file, "library(ggplot2)"
 	print >> out_file, "library(reshape2)"
-	print >> out_file, "suppressMessages(library(\"reshape2\"))"
-	print >> out_file, "library(methods)"
-	print >> out_file, "options(warn = -1)"
 	print >> out_file, "args <-commandArgs(trailingOnly = TRUE)"		
-	print >> out_file, "suppressMessages(library(\"ggplot2\"))"
-	print >> out_file, "suppressMessages(library(\"plyr\"))"	
-	print >> out_file, "sink(file = \"" + folder + "/temp.out\", type = c(\"output\", \"message\"))"
 	print >> out_file, "filename<-paste(args[1], \'.pdf\', sep=\"\")"
 	print >> out_file, "pdf(filename)"
 	p = 1
@@ -123,7 +119,7 @@ def writeRscript(PLATE):
 def runPlot (options, name):
 	name = os.path.join(os.path.dirname(options.path), name)
 	rscript=os.path.join(os.path.dirname(options.path), "run_plot.r")
-	call(["Rscript", rscript, name])
+	call(["Rscript", rscript, name], stdout=DEVNULL, stderr=DEVNULL)
 	call(["rm", rscript])	
 
 def fixParaquat(PLATE4, PLATE9):
@@ -147,7 +143,6 @@ with open (options.list, "r") as file:
 			PLATE3.append(SCANNER1[2])
 			PLATE4.append(SCANNER1[3])
 		except:
-			print "Could not find scan1 for:", date
 			pass
 		try:
 			SCANNER2 = extractExp(options,date,2)
@@ -156,7 +151,6 @@ with open (options.list, "r") as file:
                 	PLATE7.append(SCANNER2[2])
                		PLATE8.append(SCANNER2[3])
 		except:
-			print "Could not find scan2 for:", date
 			pass
 		try:
 			SCANNER3 = extractExp(options,date,3)
@@ -167,7 +161,7 @@ with open (options.list, "r") as file:
 
 namefile = open(options.name, "r")
 
-PLATE4 = fixParaquat(PLATE4, PLATE9)
+#PLATE4 = fixParaquat(PLATE4, PLATE9)
 
 writeRscript(PLATE1)
 name = namefile.readline()
