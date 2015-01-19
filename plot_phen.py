@@ -29,6 +29,10 @@ prsr.add_option( "-n", "--name-list", dest="name", metavar="FILE", help="list of
 # Get options
 (options, args) = prsr.parse_args()
 
+def checkFile(file):
+        if not os.path.isfile(file):
+                quit("Could not find the file:" + file)
+
 def checkValidArgs(options):
 	if options.list == None:
 		quit("ERROR: No list submitted")
@@ -131,6 +135,7 @@ def fixMissingCycles(PLATE1, PLATE3):
 	del PLATE1[4:6]
 	del PLATE3[5]	
 	return PLATE1, PLATE3
+
 
 """ START  """	
 
