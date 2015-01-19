@@ -22,8 +22,6 @@ prsr = opt()
 
 prsr.add_option("-l", "--list", dest="list", metavar="FILE", help="List of dates to be analyzed. Format: DDMMYY")
 prsr.add_option("-i", "--input-path", dest="path", metavar="PATH", help="Path to projects")
-prsr.add_option("-r", "--correction-R-Script", dest="script", metavar="FILE", help="R script containing skipped lines that you want to include in the plotting")
-prsr.add_option("-s", "--skip-list", dest="skip", metavar="FILE", help="list of dates to skip in plotting")
 prsr.add_option( "-n", "--name-list", dest="name", metavar="FILE", help="list of environments plate1 -> plate8")
 
 # Get options
