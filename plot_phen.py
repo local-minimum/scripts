@@ -38,6 +38,12 @@ def checkValidArgs(options):
 		quit("ERROR: No list submitted")
 	if options.path == None:
 		quit("ERROR: No PATH submitted")
+	if options.name == None:
+		quit("ERROR: No name file submitted")
+	listfile = options.list
+	name = options.name
+	checkFile(name)
+	checkFile(listfile)
 
 def extractExp(options, scan_date, scan_no):
 	scan = "_scanner" + str(scan_no)
