@@ -204,16 +204,4 @@ runPlot(options, name)
 writeRscript(PLATE8)
 name = namefile.readline()
 runPlot(options, name)
-
-
-
-
-
-
-
-
-
-
-
-
-
+§
