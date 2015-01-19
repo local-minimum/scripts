@@ -127,6 +127,11 @@ def fixParaquat(PLATE4, PLATE9):
 	PLATE4[2] = PLATE9[2]
 	return PLATE4
 
+def fixMissingCycles(PLATE1, PLATE3):
+	del PLATE1[4:6]
+	del PLATE3[5]	
+	return PLATE1, PLATE3
+
 """ START  """	
 
 checkValidArgs(options)
