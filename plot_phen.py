@@ -176,6 +176,8 @@ with open (options.list, "r") as file:
 namefile = open(options.name, "r")
 
 #PLATE4 = fixParaquat(PLATE4, PLATE9)
+#PLATE1, PLATE3 = fixMissingCycles(PLATE1, PLATE3)
+
 
 writeRscript(PLATE1)
 name = namefile.readline()
