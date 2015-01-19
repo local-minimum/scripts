@@ -22,6 +22,7 @@ prsr.add_option("-l", "--list", dest="list", metavar="FILE", help="List of dates
 prsr.add_option("-i", "--input-path", dest="path", metavar="PATH", help="Path to projects")
 prsr.add_option("-r", "--correction-R-Script", dest="script", metavar="FILE", help="R script containing skipped lines that you want to include in the plotting")
 prsr.add_option("-s", "--skip-list", dest="skip", metavar="FILE", help="list of dates to skip in plotting")
+prsr.add_option( "-n", "--name-list", dest="name", metavar="FILE", help="list of environments plate1 -> plate8")
 
 # Get options
 (options, args) = prsr.parse_args()
@@ -74,27 +75,20 @@ def extractExp(options, scan_date, scan_no):
 	FILES_FOR_PLOTTING.append(os.path.join(tmpdir, "plate4_ctrl_gt.txt"))
 	return FILES_FOR_PLOTTING
 
-def startRscript():
-	folder=os.path.dirname(options.path)
-	out = os.path.join(folder, "run_plot.r")
-	out_file = open(out, "w")
-	print >> out_file, textwrap.dedent("""\
-					#!/usr/bin/env Rscript
-					library(ggplot2)
-					library(reshape2)""")
 def writeRscript(PLATE):
 	no_files = len(PLATE)
 	folder=os.path.dirname(options.path)
         out = os.path.join(folder, "run_plot.r")
         out_file = open(out, "w")
-        print >> out_file, textwrap.dedent("""\
-#!/usr/bin/env Rscript
-library(ggplot2)
-library(reshape2)
-options(warn=-1)
-args <-commandArgs(trailingOnly = TRUE)		
-suppressMessages(library(\"ggplot2\"))
-suppressMessages(library(\"plyr\"))""")		
+	print >> out_file, "#!/usr/bin/env Rscript"
+	print >> out_file, "library(ggplot2)"
+	print >> out_file, "library(reshape2)"
+	print >> out_file, "suppressMessages(library(\"reshape2\"))"
+	print >> out_file, "library(methods)"
+	print >> out_file, "options(warn = -1)"
+	print >> out_file, "args <-commandArgs(trailingOnly = TRUE)"		
+	print >> out_file, "suppressMessages(library(\"ggplot2\"))"
+	print >> out_file, "suppressMessages(library(\"plyr\"))"	
 	print >> out_file, "sink(file = \"" + folder + "/temp.out\", type = c(\"output\", \"message\"))"
 	print >> out_file, "filename<-paste(args[1], \'.pdf\', sep=\"\")"
 	print >> out_file, "pdf(filename)"
@@ -108,58 +102,107 @@ suppressMessages(library(\"plyr\"))""")
 	for line in PLATE:
 		pindex = "p" + str(p)
 		print >> out_file, pindex + " <- melt(" + pindex + ")"
+		print >> out_file, pindex + "$variable <- \"Cycle" + str(p) + "\"" 
 		p = p + 1
-	print >> out_file, "exp <- data.frame(p1$value)"
-	p = 2
-	i = no_files
-	while i > (no_files - 1):
-		pindex = "p" + str(p)
-                print >> out_file, "exp$V" + str(p) + " <- p" + str(p) + "$value"
-		p = p + 1
-		i = i - 1
-		
-	print >> out_file, "exp$type <- \"Experiment\""
-	n = 1
-	print >> out_file, ("names(exp) <- c("),
-	while p > 1:
+	print >> out_file, "exp.molten <- rbind(", 
+	p = 1
+	while p <= no_files:
 		if p == 1:
-			print >> out_file, "\"Cycle" + str(n) + "\",",
+			print >> out_file, "p" + str(p),
 		
 		else:
-			print >> out_file, ",\"Cycle" + str(n) + "\"",
-		
-		n = n + 1
-		p = p - 1 
+			print >> out_file, ",p" + str(p),
+		p = p + 1 
 	print >> out_file, ")" 
-	print >> out_file, "exp.molten <- melt(exp, id=\"type\")"
-	print >> out_file, "p <- ggplot(exp.molten, aes(y=value, x=variable, fill=type))"
+	print >> out_file, "p <- ggplot(exp.molten, aes(y=value, x=variable, fill=\"#00AA93\"))"
 	print >> out_file, "p <- p + geom_boxplot() + labs(x=\"\", y=\"Generation time\") + scale_fill_manual(name=\"\", values=c(\"#00AA93\",\"#FF6A00\"))"
-	
+	print >> out_file, "p <- p + theme(legend.position=\"none\")"
+	print >> out_file, "print(p)"
+	print >> out_file, "dev.off()"
+
+def runPlot (options, name):
+	name = os.path.join(os.path.dirname(options.path), name)
+	rscript=os.path.join(os.path.dirname(options.path), "run_plot.r")
+	call(["Rscript", rscript, name])
+	call(["rm", rscript])	
+
+def fixParaquat(PLATE4, PLATE9):
+	PLATE4[1] = PLATE9[1]
+	PLATE4[2] = PLATE9[2]
+	return PLATE4
 
 """ START  """	
+
+checkValidArgs(options)
+
 PLATE1, PLATE2, PLATE3, PLATE4, PLATE5, PLATE6, PLATE7, PLATE8, PLATE9 = [],[],[],[],[],[],[],[],[]
 
 with open (options.list, "r") as file:
 	for date in file:
 		date = date.rstrip()
-		SCANNER1 = extractExp(options,date,1)
-		PLATE1.append(SCANNER1[0])
-		PLATE2.append(SCANNER1[1])
-		PLATE3.append(SCANNER1[2])
-		PLATE4.append(SCANNER1[3])
-"""		SCANNER2 = extractExp(options,date,2)
-		PLATE5.append(SCANNER2[0])
-                PLATE6.append(SCANNER2[1])
-                PLATE7.append(SCANNER2[2])
-                PLATE8.append(SCANNER2[3])
+		try:
+			SCANNER1 = extractExp(options,date,1)
+			PLATE1.append(SCANNER1[0])
+			PLATE2.append(SCANNER1[1])
+			PLATE3.append(SCANNER1[2])
+			PLATE4.append(SCANNER1[3])
+		except:
+			print "Could not find scan1 for:", date
+			pass
+		try:
+			SCANNER2 = extractExp(options,date,2)
+			PLATE5.append(SCANNER2[0])
+                	PLATE6.append(SCANNER2[1])
+                	PLATE7.append(SCANNER2[2])
+               		PLATE8.append(SCANNER2[3])
+		except:
+			print "Could not find scan2 for:", date
+			pass
 		try:
 			SCANNER3 = extractExp(options,date,3)
 			PLATE9.append(SCANNER3[0])
 		except:
 			pass
-"""
 
-checkValidArgs(options)
-#startRscript()
+
+namefile = open(options.name, "r")
+
+PLATE4 = fixParaquat(PLATE4, PLATE9)
+
 writeRscript(PLATE1)
+name = namefile.readline()
+runPlot(options, name)
+writeRscript(PLATE2)
+name = namefile.readline()
+runPlot(options, name)
+writeRscript(PLATE3)
+name = namefile.readline()
+runPlot(options, name)
+writeRscript(PLATE4)
+name = namefile.readline()
+runPlot(options, name)
+writeRscript(PLATE5)
+name = namefile.readline()
+runPlot(options, name)
+writeRscript(PLATE6)
+name = namefile.readline()
+runPlot(options, name)
+writeRscript(PLATE7)
+name = namefile.readline()
+runPlot(options, name)
+writeRscript(PLATE8)
+name = namefile.readline()
+runPlot(options, name)
+
+
+
+
+
+
+
+
+
+
+
+
 
