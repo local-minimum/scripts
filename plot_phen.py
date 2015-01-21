@@ -8,12 +8,13 @@ import numpy as np
 import figMethods
 import scanomatic.dataProcessing.norm as som_norm
 import textwrap
+import shutil
 
 DEVNULL = open(os.devnull, 'wb')
 
 """
 The program takes a list of dates, dates that the scan were preformed. Cycle 1 -> n. It gives all normalized phenotypes into 
-temp files. The npy objects need to be called normalized_phenotypes.npy
+temp files. The npy objects need to be called normalized_phenotypes_latest.npy
 """
 
 
@@ -45,7 +46,7 @@ def checkValidArgs(options):
 
 def extractExp(options, scan_date, scan_no):
 	scan = "_scanner" + str(scan_no)
-	project = os.path.join(options.path,(scan_date + scan), (scan_date + scan), "analysis", "normalized_phenotypes.npy")
+	project = os.path.join(options.path,(scan_date + scan), (scan_date + scan), "analysis", "normalized_phenotypes_latest.npy")
 	tmpdir = os.path.dirname(project)
 	tmpdir = os.path.join(tmpdir, "temp") 
 	if not os.path.exists(tmpdir):
@@ -83,7 +84,7 @@ def extractExp(options, scan_date, scan_no):
 	FILES_FOR_PLOTTING.append(os.path.join(tmpdir, "plate2_ctrl_gt.txt"))
 	FILES_FOR_PLOTTING.append(os.path.join(tmpdir, "plate3_ctrl_gt.txt"))
 	FILES_FOR_PLOTTING.append(os.path.join(tmpdir, "plate4_ctrl_gt.txt"))
-	return FILES_FOR_PLOTTING
+	return FILES_FOR_PLOTTING, tmpdir
 
 def writeRscript(PLATE):
 	no_files = len(PLATE)
@@ -141,35 +142,43 @@ def fixMissingCycles(PLATE1, PLATE3):
 	del PLATE3[5]	
 	return PLATE1, PLATE3
 
+def cleaner(CLEAN_LIST):
+	for folder in CLEAN_LIST:
+		shutil.rmtree(folder)
+
+
 
 """ START  """	
 
 checkValidArgs(options)
 
 PLATE1, PLATE2, PLATE3, PLATE4, PLATE5, PLATE6, PLATE7, PLATE8, PLATE9 = [],[],[],[],[],[],[],[],[]
-
+CLEAN_LIST = []
 with open (options.list, "r") as file:
 	for date in file:
 		date = date.rstrip()
 		try:
-			SCANNER1 = extractExp(options,date,1)
+			SCANNER1, tmpdir = extractExp(options,date,1)
 			PLATE1.append(SCANNER1[0])
 			PLATE2.append(SCANNER1[1])
 			PLATE3.append(SCANNER1[2])
 			PLATE4.append(SCANNER1[3])
+			CLEAN_LIST.append(tmpdir)
 		except:
 			pass
 		try:
-			SCANNER2 = extractExp(options,date,2)
+			SCANNER2, tmpdir = extractExp(options,date,2)
 			PLATE5.append(SCANNER2[0])
                 	PLATE6.append(SCANNER2[1])
                 	PLATE7.append(SCANNER2[2])
                		PLATE8.append(SCANNER2[3])
+			CLEAN_LIST.append(tmpdir)
 		except:
 			pass
 		try:
-			SCANNER3 = extractExp(options,date,3)
+			SCANNER3, tmpdir = extractExp(options,date,3)
 			PLATE9.append(SCANNER3[0])
+			CLEAN_LIST.append(tmpdir)
 		except:
 			pass
 
@@ -204,4 +213,4 @@ runPlot(options, name)
 writeRscript(PLATE8)
 name = namefile.readline()
 runPlot(options, name)
-§
+cleaner(CLEAN_LIST)
