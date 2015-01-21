@@ -5,7 +5,6 @@ import sys
 from optparse import OptionParser as opt
 from subprocess import call
 import numpy as np
-import figMethods
 import scanomatic.dataProcessing.norm as som_norm
 import textwrap
 import shutil
