@@ -160,8 +160,8 @@ def runPlot (options, name):
 	call(["rm", rscript])	
 
 def fixParaquat(PLATE4, PLATE9):
+	PLATE4[0] = PLATE9[0]
 	PLATE4[1] = PLATE9[1]
-	PLATE4[2] = PLATE9[2]
 	return PLATE4
 
 def fixMissingCycles(PLATE1, PLATE3):
