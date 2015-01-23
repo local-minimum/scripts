@@ -107,6 +107,9 @@ def writeRscript(PLATE):
 		pindex = "p" + str(p)
 		print >> out_file, pindex + " <- melt(" + pindex + ")"
 		print >> out_file, pindex + "$variable <- \"Cycle" + str(p) + "\"" 
+		print >> out_file, "b" + str(p) + " <- boxplot(" + pindex + "$value)"
+		print >> out_file, "z" + str(p) + " <- b" + str(p) + "$out < median(" + pindex + "$value)"
+		print >> out_file, "n" + str(p) + " <- sum(z" + str(p) + ")"  
 		p = p + 1
 	print >> out_file, "exp.molten <- rbind(", 
 	p = 1
@@ -117,10 +120,27 @@ def writeRscript(PLATE):
 		else:
 			print >> out_file, ",p" + str(p),
 		p = p + 1 
-	print >> out_file, ")" 
+	print >> out_file, ")"
+	print >> out_file, "no_extremes <- data.frame(",
+	p = 1
+	while p <= no_files:
+                if p == 1:
+                        print >> out_file, "n" + str(p),
+                
+                else:
+                        print >> out_file, ",n" + str(p),
+                p = p + 1 
+	print >> out_file, ")"
+	print >> out_file, "names(no_extremes) <- unique(exp.molten$variable)"
+	print >> out_file, "no_extremes.molten <- melt(no_extremes)" 
 	print >> out_file, "p <- ggplot(exp.molten, aes(y=value, x=variable, fill=\"#00AA93\"))"
 	print >> out_file, "p <- p + geom_boxplot() + labs(x=\"\", y=\"Generation time\") + scale_fill_manual(name=\"\", values=c(\"#00AA93\",\"#FF6A00\"))"
 	print >> out_file, "p <- p + theme(legend.position=\"none\")"
+	print >> out_file, "pl <- ggplot(no_extremes.molten, aes(y=value, x=variable, fill=\"#00AA93\"))"
+	print >> out_file, "pl <- pl + geom_bar(stat=\"identity\") + labs(x=\"\", y=\"Number of outliers (<Median)\") + scale_fill_manual(name=\"\", values=c(\"#00AA93\",\"#FF6A00\"))"
+
+	print >> out_file, "pl <- pl + theme(legend.position=\"none\")"
+	print >> out_file, "print(pl)"
 	print >> out_file, "print(p)"
 	print >> out_file, "dev.off()"
 
