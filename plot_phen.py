@@ -32,6 +32,10 @@ def checkFile(test_file):
         if not os.path.isfile(test_file):
                 quit("Could not find the file:" + test_file)
 
+def checkDir(test_dir):
+	if not os.path.exists(test_dir):
+		quit("Could not find the dir:" + test_dir)
+
 def checkValidArgs(options):
 	if options.list == None:
 		quit("ERROR: No list submitted")
@@ -49,6 +53,7 @@ def extractExp(options, scan_date, scan_no):
 	project = os.path.join(options.path,(scan_date + scan), (scan_date + scan), "analysis", "normalized_phenotypes_latest.npy")
 	tmpdir = os.path.dirname(project)
 	tmpdir = os.path.join(tmpdir, "temp") 
+	checkDir(os.path.dirname(project))
 	if not os.path.exists(tmpdir):
     		os.makedirs(tmpdir)
 	DN = np.load(project)
