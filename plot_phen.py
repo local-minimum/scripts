@@ -8,6 +8,7 @@ import numpy as np
 import scanomatic.dataProcessing.norm as som_norm
 import textwrap
 import shutil
+from pyPdf import PdfFileWriter, PdfFileReader
 
 DEVNULL = open(os.devnull, 'wb')
 
@@ -165,7 +166,19 @@ def cleaner(CLEAN_LIST):
 	for folder in CLEAN_LIST:
 		shutil.rmtree(folder)
 
-
+def pdfTrimmer(name, options):
+	pdf = name + ".pdf"
+	pdf = os.path.join(options.path, pdf)
+	checkFile(pdf)
+	inpdf = PdfFileReader(file(pdf, "rb"))
+	output = PdfFileWriter()
+	numPages = inpdf.getNumPages()
+	output.addPage((numPage - 2))
+	output.addPage((numPage - 1))
+	outputStream = file(pdf, "wb")
+	output.write(outputStream)
+	outputStream.close()
+	
 
 """ START  """	
 
