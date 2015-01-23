@@ -28,9 +28,9 @@ prsr.add_option( "-n", "--name-list", dest="name", metavar="FILE", help="list of
 # Get options
 (options, args) = prsr.parse_args()
 
-def checkFile(file):
-        if not os.path.isfile(file):
-                quit("Could not find the file:" + file)
+def checkFile(test_file):
+        if not os.path.isfile(test_file):
+                quit("Could not find the file:" + test_file)
 
 def checkValidArgs(options):
 	if options.list == None:
@@ -167,18 +167,20 @@ def cleaner(CLEAN_LIST):
 		shutil.rmtree(folder)
 
 def pdfTrimmer(name, options):
+	name = name.rstrip()
+	outname = name + "_out.pdf"
 	pdf = name + ".pdf"
 	pdf = os.path.join(options.path, pdf)
 	checkFile(pdf)
 	inpdf = PdfFileReader(file(pdf, "rb"))
 	output = PdfFileWriter()
 	numPages = inpdf.getNumPages()
-	output.addPage((numPage - 2))
-	output.addPage((numPage - 1))
-	outputStream = file(pdf, "wb")
+	output.addPage(inpdf.getPage((int(numPages) - 2)))
+	output.addPage(inpdf.getPage((int(numPages) - 1)))
+	outputStream = file(outname, "wb")
 	output.write(outputStream)
 	outputStream.close()
-	
+	os.remove(pdf)
 
 """ START  """	
 
@@ -186,8 +188,8 @@ checkValidArgs(options)
 
 PLATE1, PLATE2, PLATE3, PLATE4, PLATE5, PLATE6, PLATE7, PLATE8, PLATE9 = [],[],[],[],[],[],[],[],[]
 CLEAN_LIST = []
-with open (options.list, "r") as file:
-	for date in file:
+with open (options.list, "r") as file_date:
+	for date in file_date:
 		date = date.rstrip()
 		try:
 			SCANNER1, tmpdir = extractExp(options,date,1)
@@ -224,25 +226,33 @@ namefile = open(options.name, "r")
 writeRscript(PLATE1)
 name = namefile.readline()
 runPlot(options, name)
+pdfTrimmer(name,options)
 writeRscript(PLATE2)
 name = namefile.readline()
 runPlot(options, name)
+pdfTrimmer(name,options)
 writeRscript(PLATE3)
 name = namefile.readline()
 runPlot(options, name)
+pdfTrimmer(name,options)
 writeRscript(PLATE4)
 name = namefile.readline()
 runPlot(options, name)
+pdfTrimmer(name,options)
 writeRscript(PLATE5)
 name = namefile.readline()
 runPlot(options, name)
+pdfTrimmer(name,options)
 writeRscript(PLATE6)
 name = namefile.readline()
 runPlot(options, name)
+pdfTrimmer(name,options)
 writeRscript(PLATE7)
 name = namefile.readline()
 runPlot(options, name)
+pdfTrimmer(name,options)
 writeRscript(PLATE8)
 name = namefile.readline()
 runPlot(options, name)
+pdfTrimmer(name,options)
 cleaner(CLEAN_LIST)
