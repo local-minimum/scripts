@@ -86,7 +86,7 @@ def extractExp(options, scan_date, scan_no):
 	FILES_FOR_PLOTTING.append(os.path.join(tmpdir, "plate4_ctrl_gt.txt"))
 	return FILES_FOR_PLOTTING, tmpdir
 
-def writeRscript(PLATE):
+def writeRscript(PLATE, name):
 	no_files = len(PLATE)
 	folder=os.path.dirname(options.path)
         out = os.path.join(folder, "run_plot.r")
@@ -217,43 +217,26 @@ with open (options.list, "r") as file_date:
 		except:
 			pass
 
+PLATES = []
+PLATES.append(PLATE1)
+PLATES.append(PLATE2)
+PLATES.append(PLATE3)
+PLATES.append(PLATE4)
+PLATES.append(PLATE5)
+PLATES.append(PLATE6)
+PLATES.append(PLATE7)
+PLATES.append(PLATE8)
 
 namefile = open(options.name, "r")
 
 #PLATE4 = fixParaquat(PLATE4, PLATE9)
 #PLATE1, PLATE3 = fixMissingCycles(PLATE1, PLATE3)
+	
+for PLATE, temp_name  in zip(PLATES, namefile):
+	temp_name = temp_name.rstrip()
+	writeRscript(PLATE, temp_name)
+	runPlot(options, temp_name)
+	pdfTrimmer(temp_name,options)
 
-
-writeRscript(PLATE1)
-name = namefile.readline()
-runPlot(options, name)
-pdfTrimmer(name,options)
-writeRscript(PLATE2)
-name = namefile.readline()
-runPlot(options, name)
-pdfTrimmer(name,options)
-writeRscript(PLATE3)
-name = namefile.readline()
-runPlot(options, name)
-pdfTrimmer(name,options)
-writeRscript(PLATE4)
-name = namefile.readline()
-runPlot(options, name)
-pdfTrimmer(name,options)
-writeRscript(PLATE5)
-name = namefile.readline()
-runPlot(options, name)
-pdfTrimmer(name,options)
-writeRscript(PLATE6)
-name = namefile.readline()
-runPlot(options, name)
-pdfTrimmer(name,options)
-writeRscript(PLATE7)
-name = namefile.readline()
-runPlot(options, name)
-pdfTrimmer(name,options)
-writeRscript(PLATE8)
-name = namefile.readline()
-runPlot(options, name)
-pdfTrimmer(name,options)
 cleaner(CLEAN_LIST)
+
