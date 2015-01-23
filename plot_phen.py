@@ -169,6 +169,7 @@ def cleaner(CLEAN_LIST):
 def pdfTrimmer(name, options):
 	name = name.rstrip()
 	outname = name + "_out.pdf"
+	outname = os.path.join(options.path, outname)
 	pdf = name + ".pdf"
 	pdf = os.path.join(options.path, pdf)
 	checkFile(pdf)
