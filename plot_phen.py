@@ -141,8 +141,8 @@ def writeRscript(PLATE, name):
 	print >> out_file, "pl <- pl + geom_bar(stat=\"identity\") + labs(x=\"\", y=\"Number of outliers (<Median)\") + scale_fill_manual(name=\"\", values=c(\"#00AA93\",\"#FF6A00\"))"
 
 	print >> out_file, "pl <- pl + theme(legend.position=\"none\")"
-	print >> out_file, "pl <- pl + ggtitle(\"" + name "\")"
-	print >> out_file, "p <- p + ggtitle(\"" + name "\")"
+	print >> out_file, "pl <- pl + ggtitle(\"" + name + "\")"
+	print >> out_file, "p <- p + ggtitle(\"" + name + "\")"
 	print >> out_file, "print(pl)"
 	print >> out_file, "print(p)"
 	print >> out_file, "dev.off()"
