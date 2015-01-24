@@ -116,6 +116,7 @@ def writeRscript(PLATE, name):
 		print >> out_file, "b" + str(p) + " <- boxplot(" + pindex + "$value)"
 		print >> out_file, "z" + str(p) + " <- b" + str(p) + "$out < median(" + pindex + "$value)"
 		print >> out_file, "n" + str(p) + " <- sum(z" + str(p) + ")"  
+		print >> out_file, "m" + str(p) + " <- rbind(mean(p" + str(p) + "$value), sd(p" + str(p) + "$value))"
 		p = p + 1
 	print >> out_file, "exp.molten <- rbind(", 
 	p = 1
@@ -137,6 +138,21 @@ def writeRscript(PLATE, name):
                         print >> out_file, ",n" + str(p),
                 p = p + 1 
 	print >> out_file, ")"
+	print >> out_file, "means <- data.frame(",
+	p = 1
+	while p <= no_files:
+		if p == 1:
+			print >> out_file, "m" + str(p),
+		else:
+			print >> out_file, ",m" + str(p),
+		p = p + 1
+	print >> out_file, ")"
+	print >> out_file, "names(means) <- unique(exp.molten$variable)"
+	print >> out_file, "means <- as.data.frame(t(means))"
+	print >> out_file, "means$V3 <- row.names(means)"
+	print >> out_file, "pm <- ggplot(means, aes(y=V1, x=V3, colour=\"#00AA93\", group=1))"
+	print >> out_file, "pm <- pm + geom_errorbar(aes(ymin=V1-V2, ymax=V1+V2, width=.2)) + geom_line() + geom_point()" 
+	print >> out_file, "pm <- pm + theme(legend.position=\"none\") + labs(x=\"\", y=\"Average Generation time\")"
 	print >> out_file, "names(no_extremes) <- unique(exp.molten$variable)"
 	print >> out_file, "no_extremes.molten <- melt(no_extremes)" 
 	print >> out_file, "p <- ggplot(exp.molten, aes(y=value, x=variable, fill=\"#00AA93\"))"
@@ -148,8 +164,10 @@ def writeRscript(PLATE, name):
 	print >> out_file, "pl <- pl + theme(legend.position=\"none\")"
 	print >> out_file, "pl <- pl + ggtitle(\"" + name + "\")"
 	print >> out_file, "p <- p + ggtitle(\"" + name + "\")"
+	print >> out_file, "pm <- pm + ggtitle(\"" + name + "\")"
 	print >> out_file, "print(pl)"
 	print >> out_file, "print(p)"
+	print >> out_file, "print(pm)"
 	print >> out_file, "dev.off()"
 
 def runPlot (options, name):
@@ -183,6 +201,7 @@ def pdfTrimmer(name, options):
 	inpdf = PdfFileReader(file(pdf, "rb"))
 	output = PdfFileWriter()
 	numPages = inpdf.getNumPages()
+	output.addPage(inpdf.getPage((int(numPages) - 3)))
 	output.addPage(inpdf.getPage((int(numPages) - 2)))
 	output.addPage(inpdf.getPage((int(numPages) - 1)))
 	outputStream = file(outname, "wb")
