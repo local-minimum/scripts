@@ -23,7 +23,8 @@ prsr = opt()
 
 prsr.add_option("-l", "--list", dest="list", metavar="FILE", help="List of dates to be analyzed. Format: DDMMYY")
 prsr.add_option("-i", "--input-path", dest="path", metavar="PATH", help="Path to projects")
-prsr.add_option( "-n", "--name-list", dest="name", metavar="FILE", help="list of environments plate1 -> plate8")
+prsr.add_option("-n", "--name-list", dest="name", metavar="FILE", help="list of environments plate1 -> plate8")
+prsr.add_option("-k", "--keep-rscript", dest="keep", metavar="BOOLEAN", help="Set True to keep the plotting Rscripts")
 
 # Get options
 (options, args) = prsr.parse_args()
@@ -171,11 +172,16 @@ def writeRscript(PLATE, name):
 	print >> out_file, "dev.off()"
 
 def runPlot (options, name):
-	name = os.path.join(os.path.dirname(options.path), name)
-	name = name.rstrip()
+	name_full = os.path.join(os.path.dirname(options.path), name)
+	name_full = name.rstrip()
 	rscript=os.path.join(os.path.dirname(options.path), "run_plot.r")
-	call(["Rscript", rscript, name], stdout=DEVNULL, stderr=DEVNULL)
-	call(["rm", rscript])	
+	call(["Rscript", rscript, name_full], stdout=DEVNULL, stderr=DEVNULL)
+	if options.keep:
+		new_name = name.rstrip() + "_plot.r"
+		new_name = os.path.join(os.path.dirname(options.path), new_name)
+		call(["mv", rscript, new_name])
+	else:
+		call(["rm", rscript])	
 
 def fixParaquat(PLATE4, PLATE9):
 	PLATE4[0] = PLATE9[0]
