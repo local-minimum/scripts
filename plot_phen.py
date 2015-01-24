@@ -24,7 +24,7 @@ prsr = opt()
 prsr.add_option("-l", "--list", dest="list", metavar="FILE", help="List of dates to be analyzed. Format: DDMMYY")
 prsr.add_option("-i", "--input-path", dest="path", metavar="PATH", help="Path to projects")
 prsr.add_option("-n", "--name-list", dest="name", metavar="FILE", help="list of environments plate1 -> plate8")
-prsr.add_option("-k", "--keep-rscript", dest="keep", metavar="BOOLEAN", help="Set True to keep the plotting Rscripts")
+prsr.add_option("-k", "--keep-rscript", dest="keep", metavar="BOOLEAN", default="False", help="Set True to keep the plotting Rscripts. Default:%default")
 
 # Get options
 (options, args) = prsr.parse_args()
@@ -249,6 +249,10 @@ with open (options.list, "r") as file_date:
 		except:
 			pass
 
+
+#PLATE4 = fixParaquat(PLATE4, PLATE9)
+#PLATE1, PLATE3 = fixMissingCycles(PLATE1, PLATE3)
+
 PLATES = []
 PLATES.append(PLATE1)
 PLATES.append(PLATE2)
@@ -261,9 +265,6 @@ PLATES.append(PLATE8)
 
 namefile = open(options.name, "r")
 
-#PLATE4 = fixParaquat(PLATE4, PLATE9)
-#PLATE1, PLATE3 = fixMissingCycles(PLATE1, PLATE3)
-	
 for PLATE, temp_name  in zip(PLATES, namefile):
 	temp_name = temp_name.rstrip()
 	writeRscript(PLATE, temp_name)
