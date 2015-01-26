@@ -173,7 +173,7 @@ def writeRscript(PLATE, name):
 
 def runPlot (options, name):
 	name_full = os.path.join(os.path.dirname(options.path), name)
-	name_full = name.rstrip()
+	#name_full = name.rstrip()
 	rscript=os.path.join(os.path.dirname(options.path), "run_plot.r")
 	call(["Rscript", rscript, name_full], stdout=DEVNULL, stderr=DEVNULL)
 	if options.keep:
@@ -250,8 +250,8 @@ with open (options.list, "r") as file_date:
 			pass
 
 
-#PLATE4 = fixParaquat(PLATE4, PLATE9)
-#PLATE1, PLATE3 = fixMissingCycles(PLATE1, PLATE3)
+PLATE4 = fixParaquat(PLATE4, PLATE9)
+PLATE1, PLATE3 = fixMissingCycles(PLATE1, PLATE3)
 
 PLATES = []
 PLATES.append(PLATE1)
