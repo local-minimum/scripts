@@ -113,7 +113,7 @@ def writeRscript(PLATE, name):
 	for line in PLATE:
 		pindex = "p" + str(p)
 		print >> out_file, pindex + " <- melt(" + pindex + ")"
-		print >> out_file, pindex + "$variable <- \"Cycle" + str(p) + "\"" 
+		print >> out_file, pindex + "$variable <- \"Cycle" + str(p).zfill(2) + "\"" 
 		print >> out_file, "b" + str(p) + " <- boxplot(" + pindex + "$value)"
 		print >> out_file, "z" + str(p) + " <- b" + str(p) + "$out < median(" + pindex + "$value)"
 		print >> out_file, "n" + str(p) + " <- sum(z" + str(p) + ")"  
