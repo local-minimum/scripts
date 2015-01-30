@@ -169,7 +169,8 @@ def writeRscript(PLATE, name):
 	print >> out_file, "print(pl)"
 	print >> out_file, "print(p)"
 	print >> out_file, "print(pm)"
-	print >> out_file, "dev.off()"
+	print >> out_file, "print(ggplot(c%s, aes(x=V1)) + xlim(0,12) + ggtitle(\"%s\") + labs(x=\"GT(h)\", y=\"count\") + theme_grey(base_size = 30) + geom_histogram(binwidth=0.2, fill=\"#FF6A00\"))" % (p, name)
+        print >> out_file, "dev.off()"
 
 def runPlot (options, name):
 	name_full = os.path.join(os.path.dirname(options.path), name)
