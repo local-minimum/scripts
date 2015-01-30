@@ -180,7 +180,7 @@ def runPlot (options, name):
 	#name_full = name.rstrip()
 	rscript=os.path.join(os.path.dirname(options.path), "run_plot.r")
 	call(["Rscript", rscript, name_full], stdout=DEVNULL, stderr=DEVNULL)
-	if options.keep == True:
+	if bool(options.keep) == True:
 		new_name = name.rstrip() + "_plot.r"
 		new_name = os.path.join(os.path.dirname(options.path), new_name)
 		call(["mv", rscript, new_name])
