@@ -30,7 +30,7 @@ def _check_params(options):
     global _grayscale_pattern
     if options.out is None:
         options.out = options.input_file
-    if _grayscale_pattern.match(options.gray_scale) is None:
+    if options.gray_scale is None or _grayscale_pattern.match(options.gray_scale) is None:
         quit("ERROR:Grayscale seem to be of wrong format!")
 
 if __name__ == "__main__":
