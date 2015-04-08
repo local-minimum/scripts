@@ -7,23 +7,22 @@ _grayscale_pattern = re.compile(r"\'grayscale_values\':\s\[(.+)\]")
 	
 def patch(input_file, new_gs, output):
     global _grayscale_pattern
-    PASS_ANALYSIS = _parser(input_file)
-    for i in xrange(1, len(PASS_ANALYSIS)):
-        PASS_ANALYSIS[i] = _grayscale_pattern.sub(new_gs, PASS_ANALYSIS[i])
-    _writer(PASS_ANALYSIS, output)	
+    first_pass_data = _parser(input_file)
+    for i in range(1, len(first_pass_data)):
+        first_pass_data[i] = _grayscale_pattern.sub(new_gs, first_pass_data[i])
+    _writer(first_pass_data, output)	
 
 	
-def _writer(PASS_ANALYSIS, output):
+def _writer(first_pass_data, output):
     with open(output, "w") as fh:
-        for line in PASS_ANALYSIS:
+        for line in first_pass_data:
             fh.write(line)
 
 
 def _parser(input_file):
-		
     with open(input_file, "r") as pass_analysis:
-        PASS_ANALYSIS = pass_analysis.readlines()
-    return PASS_ANALYSIS
+        first_pass_data = pass_analysis.readlines()
+    return first_pass_data
     
 
 def _check_params(options):
