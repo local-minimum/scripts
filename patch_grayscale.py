@@ -15,32 +15,29 @@ def check_params(options):
     if re.match(r"grayscale_values\':\s\[(.+)\],", options.gray_scale) == None:
         quit("ERROR:Grayscale seem to be of wrong format!")
 
-class gray_scale_patcher():
 	
-    def __init__(self):
-        pass
-		
-    def patch(self, input_file, new_gs, output):
+def patch(self, input_file, new_gs, output):
 
-        PASS_ANALYSIS = self.parser(input_file)
-	new_gs = str(new_gs) + str(",")
-        for i in xrange(1, len(PASS_ANALYSIS)):
-            p = re.compile(r"\'grayscale_values\':\s\[(.+)\],")
-            PASS_ANALYSIS[i] = p.sub(new_gs, PASS_ANALYSIS[i])
-        self.writer(PASS_ANALYSIS, output)	
+    PASS_ANALYSIS = parser(input_file)
+    new_gs = str(new_gs) + str(",")
+    for i in xrange(1, len(PASS_ANALYSIS)):
+        p = re.compile(r"\'grayscale_values\':\s\[(.+)\],")
+        PASS_ANALYSIS[i] = p.sub(new_gs, PASS_ANALYSIS[i])
+    writer(PASS_ANALYSIS, output)	
+
 	
-    def writer(self, PASS_ANALYSIS, output):
+def writer(self, PASS_ANALYSIS, output):
+    fh = open(output, "w")
+    for line in PASS_ANALYSIS:
+        fh.write(line)
+
+
+def parser(self, input_file):
 		
-        fh = open(output, "w")
-        for line in PASS_ANALYSIS:
-           fh.write(line)
-				
-    def parser(self, input_file):
-		
-        with open(input_file, "r") as pass_analysis:
-            PASS_ANALYSIS = pass_analysis.readlines()
-        return PASS_ANALYSIS
-	
+    with open(input_file, "r") as pass_analysis:
+        PASS_ANALYSIS = pass_analysis.readlines()
+    return PASS_ANALYSIS
+
 if __name__ == "__main__":
-    patch = gray_scale_patcher()
-    patch.patch(options.input_file, options.gray_scale, options.out)	
+    
+    patch(options.input_file, options.gray_scale, options.out)	
