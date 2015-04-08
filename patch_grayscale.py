@@ -5,7 +5,7 @@ from optparse import OptionParser as opt
 _grayscale_pattern = re.compile(r"\'grayscale_values\':\s\[(.+)\]")
         
 	
-def patch(self, input_file, new_gs, output):
+def patch(input_file, new_gs, output):
     global _grayscale_pattern
     PASS_ANALYSIS = _parser(input_file)
     for i in xrange(1, len(PASS_ANALYSIS)):
@@ -13,13 +13,13 @@ def patch(self, input_file, new_gs, output):
     _writer(PASS_ANALYSIS, output)	
 
 	
-def _writer(self, PASS_ANALYSIS, output):
+def _writer(PASS_ANALYSIS, output):
     with open(output, "w") as fh:
         for line in PASS_ANALYSIS:
             fh.write(line)
 
 
-def _parser(self, input_file):
+def _parser(input_file):
 		
     with open(input_file, "r") as pass_analysis:
         PASS_ANALYSIS = pass_analysis.readlines()
