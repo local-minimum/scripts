@@ -2,14 +2,7 @@ import re
 from optparse import OptionParser as opt
 
 _grayscale_pattern = re.compile(r"\'grayscale_values\':\s\[(.+)\]")
-
-def check_params(options):
-    global _grayscale_pattern
-    if options.out is None:
-        options.out = options.input_file
-    if _grayscale_pattern.match(options.gray_scale) is None:
-        quit("ERROR:Grayscale seem to be of wrong format!")
-
+        
 	
 def patch(self, input_file, new_gs, output):
     global _grayscale_pattern
@@ -30,6 +23,14 @@ def _parser(self, input_file):
     with open(input_file, "r") as pass_analysis:
         PASS_ANALYSIS = pass_analysis.readlines()
     return PASS_ANALYSIS
+    
+
+def _check_params(options):
+    global _grayscale_pattern
+    if options.out is None:
+        options.out = options.input_file
+    if _grayscale_pattern.match(options.gray_scale) is None:
+        quit("ERROR:Grayscale seem to be of wrong format!")
 
 if __name__ == "__main__":
     
@@ -39,5 +40,5 @@ if __name__ == "__main__":
     prsr.add_option("-o", "--output", dest="out", metavar="FILE", help="Output file, overwrites old by default")
 
     options, args = prsr.parse_args()
-    
+    _check_params(options)
     patch(options.input_file, options.gray_scale, options.out)	
