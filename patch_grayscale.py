@@ -1,21 +1,22 @@
 import re
 from optparse import OptionParser as opt
 
+_grayscale_pattern = re.compile(r"\'grayscale_values\':\s\[(.+)\],")
+
 def check_params(options):
-	
+    global _grayscale_pattern
     if options.out == None:
         options.out = options.input_file
-    if re.match(r"grayscale_values\':\s\[(.+)\],", options.gray_scale) == None:
+    if _grayscale_pattern.match(options.gray_scale) is None:
         quit("ERROR:Grayscale seem to be of wrong format!")
 
 	
 def patch(self, input_file, new_gs, output):
-
+    global _grayscale_pattern
     PASS_ANALYSIS = parser(input_file)
     new_gs = str(new_gs) + str(",")
     for i in xrange(1, len(PASS_ANALYSIS)):
-        p = re.compile(r"\'grayscale_values\':\s\[(.+)\],")
-        PASS_ANALYSIS[i] = p.sub(new_gs, PASS_ANALYSIS[i])
+        PASS_ANALYSIS[i] = _grayscale_pattern.sub(new_gs, PASS_ANALYSIS[i])
     writer(PASS_ANALYSIS, output)	
 
 	
