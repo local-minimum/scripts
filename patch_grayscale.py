@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import re
 from optparse import OptionParser as opt
 
